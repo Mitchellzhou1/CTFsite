@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, url_for, redirect, make_response
+from flask import Flask, render_template, request, session, url_for, redirect, make_response, jsonify
 from app import app, get_conn
 import jwt
 import string, random
@@ -13,8 +13,7 @@ secret_key = 'cristianoronaldo'
 cursor = get_conn().cursor()
 initial = True
 
-curr_user = {}
-
+curr_user = {"name": "Guest"}
 
 def check_cookie():
     global curr_user
@@ -22,12 +21,14 @@ def check_cookie():
 
         cookie = request.cookies.get("session")
         decoded_token = jwt.decode(cookie, secret_key, algorithms=['HS256'])
+        print("decoded cookie" , decoded_token)
         curr_user = decoded_token
         make_response(redirect(url_for('index')))
 
-        query = f"SELECT * FROM users WHERE name = '{decoded_token['name']}'"
-        cursor.execute(query)
-        curr_user = cursor.fetchone()
+        if curr_user['name'] != 'Guest':
+            query = f"SELECT * FROM users WHERE name = '{decoded_token['name']}'"
+            cursor.execute(query)
+            curr_user = cursor.fetchone()
 
     except jwt.ExpiredSignatureError:
         print("JWT token has expired.")
@@ -59,16 +60,15 @@ def authenticate(username, password):
 
 
 @app.route('/')
-def index():
+def index(name=''):
     global initial
-    check_cookie()
-    name = curr_user['name'] if curr_user else ''
+    name = curr_user['name'] if curr_user['name'] != 'Guest' else ''
     res = make_response(render_template('index.html', name=name))
     if initial:
         res.set_cookie("session",
-                       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiIn0.QgLEITyTJp_ult6CHUXxOGjc4vXgJtfwg5HRCDmzGSg")
+                       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR3Vlc3QifQ.zK7zYBE9t7NHZROgouNsDFxqf2uCzVlEeLpf08L3K5Y")
         initial = False
-    print(curr_user)
+    print("curr_user:", curr_user)
     return res
 
 
@@ -86,6 +86,7 @@ def login():
             message = "Sorry, this user is doesn't exist"
             return render_template('login.html', error=message)
 
+    get_chat()
     return render_template('login.html')
 
 
@@ -94,24 +95,45 @@ def logout():
     global curr_user
     res = make_response(redirect(url_for('index')))
     res.set_cookie("session",
-                   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiIn0.QgLEITyTJp_ult6CHUXxOGjc4vXgJtfwg5HRCDmzGSg")
+                   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR3Vlc3QifQ.zK7zYBE9t7NHZROgouNsDFxqf2uCzVlEeLpf08L3K5Y")
     check_cookie()
     return res
 
 
-@app.route('/post_message', methods=['POST'])
-def post_message():
-    if curr_user:
-        content = request.form['content']
-        message = {'user': curr_user['name'], 'content': content}
-        ##update DATABASE!!!!
+@app.route('/submit_chat', methods=['POST'])
+def submit_chat():
+    global cursor
+    message = request.form.get('message')
+    name = curr_user['name']
 
-        return render_template('index.html', messages=messages)
-    else:
-        return make_response(redirect(url_for('index')))
+    # Insert the message into the database (this is a simple illustration; use proper prepared statements in production)
+    query = "INSERT INTO chatlog (name, message) VALUES (%s, %s);"
+    cursor.execute(query, (name, message))
+    print("query worked")
+    get_conn().commit()
+    print("query commited")
+    get_chat()
+
+    # Return a response indicating success
+    return jsonify({'status': 'Message received'})
+
+@app.route('/get_chat')
+def get_chat():
+    global cursor
+    # Retrieve all chat messages from the database
+    query = "SELECT * FROM chatlog"
+    cursor.execute(query)
+    chats = cursor.fetchall()
+    print("Chat logs")
+    for i in chats:
+        print(i)
+
+    return jsonify(chats)
+
+
 
 
 if __name__ == "__main__":
-    app.run('0.0.0.0', 5800, debug=False)
+    app.run('127.0.0.1', 5800, debug=False)
 
 
