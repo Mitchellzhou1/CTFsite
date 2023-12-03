@@ -139,3 +139,13 @@ document.addEventListener("DOMContentLoaded", function() {
         window.location.href = "/login";
     });
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    const loginButton = document.getElementById("logOut");
+
+    // Redirect to the login route when the button is clicked
+    loginButton.addEventListener("click", function() {
+        // Redirect to the login route handled by Flask
+        window.location.href = "/logout";
+    });
+});

@@ -5,14 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ed Sheeran Songs</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 </head>
 <body>
     <header>
         <h1>Ed Sheeran Songs</h1>
-        <button id="loginButton">Login</button>
+        {% if name %}
+            <p style="color: white;"> Welcome: <b>{{ name }}</b></p>
+        {% endif %}
+        {% if name %}
+            <button id="logOut">Sign Out</button>
+        {%else%}
+            <button id="loginButton">Login</button>
+        {% endif %}
     </header>
 
     <div id="songs"></div>
+
+    <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title">Chat</div>
+                <hr/>
+                <div class="messages" style="height: 70vh; overflow-y:scroll;">
+                  {% for message in messages %}
+                    <div>{{ message|safe }}</div> <!-- turn off XSS checking with "|safe" -->
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form id="chat">
+        <div class="container">
+            <div class="input-group mb-3">
+              <input id="textbox" type="text" class="form-control" placeholder="Type your message here" aria-label="Type your message here" aria-describedby="send-button">
+              <button class="btn btn-primary" id="send-button">Send</button>
+            </div>
+        </div>
+      </form>
+
+      <script type="text/javascript" charset="utf-8">
+
+        $("#chat").submit(function(e) {
+          e.preventDefault();
+          var message = $('#textbox').val().trim();
+          socket.emit('send message', {
+            username : $('#username').text(),
+            message : message,
+            token : getCookie("token")
+          });
+          $('#textbox').val('');
+        });
+
+        socket.on('receive message', function(data) {
+          console.log('Received data:', data);
+          var messageElement = $('<div>').text(data.message);
+          $('.messages').append(messageElement);
+          $('.messages').scrollTop($('.messages').prop('scrollHeight'));
+        });
+
+      </script>
+
+
 
     <script src="/static/script.js"></script>
 </body>
