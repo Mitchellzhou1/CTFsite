@@ -7,7 +7,6 @@ app.secret_key = 'Q3I3Pm1lc3NpQ3I3Pm1lc3NpQ3I3Pm1lc3Np'
 secret_key = 'cristianoronaldo'
 # app.config['SESSION_COOKIE_HTTPONLY'] = True
 
-
 cursor = get_conn().cursor()
 initial = True
 
