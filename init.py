@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, session, url_for, redirect, make_response, jsonify
 from app import app, get_conn
 import jwt
-from py_mini_racer import py_mini_racer
 
 app.secret_key = 'Q3I3Pm1lc3NpQ3I3Pm1lc3NpQ3I3Pm1lc3Np'
 
@@ -9,7 +8,6 @@ secret_key = 'cristianoronaldo'
 # app.config['SESSION_COOKIE_HTTPONLY'] = True
 
 
-ctx = py_mini_racer.MiniRacer()
 cursor = get_conn().cursor()
 initial = True
 
