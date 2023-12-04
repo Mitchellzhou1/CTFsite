@@ -29,10 +29,12 @@ def check_cookie():
         else:
             curr_user = {"name": "Guest"}
 
-    except jwt.ExpiredSignatureError:
-        print("JWT token has expired.")
-    except jwt.InvalidTokenError as e:
-        print("Invalid JWT token:", e)
+    # except jwt.ExpiredSignatureError:
+    #     print("JWT token has expired.")
+    # except jwt.InvalidTokenError as e:
+    #     print("Invalid JWT token:", e)
+    except Exception as e:
+        print(e)
 
 
 def JWT(name):

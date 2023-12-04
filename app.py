@@ -16,12 +16,12 @@ def get_conn():
     #    charset='utf8mb4',
     #    cursorclass=pymysql.cursors.DictCursor)
 
-    return pymysql.connect(
-        host="127.0.0.1",
-        user='root',
-        passwd='',
-        db='pentesting',
-        charset='utf8mb4',
-        cursorclass=pymysql.cursors.DictCursor)
+    return pymysql.connect(host="localhost",
+                       port=8889,
+                       user='root',
+                       password='root',
+                       db='pentesting',
+                       charset='utf8mb4',
+                       cursorclass=pymysql.cursors.DictCursor)
 
 
