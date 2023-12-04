@@ -59,3 +59,37 @@ header {
         width: calc(50% - 30px);
     }
 }
+
+.edSheeranButton1,
+.edSheeranButton2 {
+  background-color: #ffffff; /* White background */
+  color: #3b5998; /* Dark blue text */
+  border: 2px solid #3b5998; /* Dark blue border */
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-family: 'Arial', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.edSheeranButton1:hover,
+.edSheeranButton2:hover {
+  background-color: #3b5998; /* Dark blue */
+  color: #ffffff; /* White text */
+}
+
+.edSheeranButton2 {
+  border-color: #ff7f00; /* Orange border */
+  color: #ff7f00; /* Orange text */
+}
+
+.edSheeranButton2:hover {
+  background-color: #ff7f00; /* Orange background */
+  color: #ffffff; /* White text */
+}
+

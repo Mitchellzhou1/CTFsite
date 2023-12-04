@@ -1,15 +1,15 @@
 from flask import Flask, render_template, request, session, url_for, redirect, make_response, jsonify
 from app import app, get_conn
 import jwt
-import string, random
-#
+from py_mini_racer import py_mini_racer
+
 app.secret_key = 'Q3I3Pm1lc3NpQ3I3Pm1lc3NpQ3I3Pm1lc3Np'
 
 secret_key = 'cristianoronaldo'
 # app.config['SESSION_COOKIE_HTTPONLY'] = True
 
-# Index page
 
+ctx = py_mini_racer.MiniRacer()
 cursor = get_conn().cursor()
 initial = True
 
@@ -21,7 +21,6 @@ def check_cookie():
 
         cookie = request.cookies.get("session")
         decoded_token = jwt.decode(cookie, secret_key, algorithms=['HS256'])
-        print("decoded cookie" , decoded_token)
         curr_user = decoded_token
         make_response(redirect(url_for('index')))
 
@@ -29,6 +28,8 @@ def check_cookie():
             query = f"SELECT * FROM users WHERE name = '{decoded_token['name']}'"
             cursor.execute(query)
             curr_user = cursor.fetchone()
+        else:
+            curr_user = {"name": "Guest"}
 
     except jwt.ExpiredSignatureError:
         print("JWT token has expired.")
@@ -60,15 +61,15 @@ def authenticate(username, password):
 
 
 @app.route('/')
-def index(name=''):
+def index():
     global initial
+    check_cookie()
     name = curr_user['name'] if curr_user['name'] != 'Guest' else ''
     res = make_response(render_template('index.html', name=name))
     if initial:
         res.set_cookie("session",
                        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR3Vlc3QifQ.zK7zYBE9t7NHZROgouNsDFxqf2uCzVlEeLpf08L3K5Y")
         initial = False
-    print("curr_user:", curr_user)
     return res
 
 
@@ -92,45 +93,43 @@ def login():
 
 @app.route('/logout')
 def logout():
-    global curr_user
     res = make_response(redirect(url_for('index')))
     res.set_cookie("session",
                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR3Vlc3QifQ.zK7zYBE9t7NHZROgouNsDFxqf2uCzVlEeLpf08L3K5Y")
-    check_cookie()
     return res
 
 
 @app.route('/submit_chat', methods=['POST'])
 def submit_chat():
-    global cursor
-    message = request.form.get('message')
-    name = curr_user['name']
+    try:
+        message = request.form.get('comment')
+        name = curr_user['name']
 
-    # Insert the message into the database (this is a simple illustration; use proper prepared statements in production)
-    query = "INSERT INTO chatlog (name, message) VALUES (%s, %s);"
-    cursor.execute(query, (name, message))
-    print("query worked")
-    get_conn().commit()
-    print("query commited")
-    get_chat()
+        query = "Select * From users where name=%s"
+        cursor.execute(query, (name))
+        result = cursor.fetchone()
+        name = f"{result['name']} ({result['privilege']})"
 
-    # Return a response indicating success
-    return jsonify({'status': 'Message received'})
+        query = "INSERT INTO chatlog (name, message) VALUES (%s, %s);"
+        cursor.execute(query, (name, message))
+        get_conn().commit()
+        return make_response(render_template('chat.html', messages=get_chat()))
+    except Exception:
+        return make_response(render_template('chat.html', messages=get_chat()))
 
-@app.route('/get_chat')
+
+@app.route('/get_chat', methods=['POST'])
 def get_chat():
-    global cursor
-    # Retrieve all chat messages from the database
-    query = "SELECT * FROM chatlog"
+    query = "SELECT * FROM `chatlog` ORDER BY time_column ASC;"
     cursor.execute(query)
     chats = cursor.fetchall()
-    print("Chat logs")
-    for i in chats:
-        print(i)
+    return chats
 
-    return jsonify(chats)
+@app.route('/chat')
+def chat():
+    chat_log = get_chat()
 
-
+    return render_template('chat.html', messages=chat_log)
 
 
 if __name__ == "__main__":
