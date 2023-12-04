@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% autoescape false %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -73,64 +74,14 @@
             <p style="color: white;"> Welcome: <b>{{ name }}</b></p>
         {% endif %}
         {% if name %}
-            <button id="logOut">Sign Out</button>
+            <button id="logOut" class="edSheeranButton1">Sign Out</button>
+            <button id="Chat" class="edSheeranButton2">Chat</button>
         {%else%}
-            <button id="loginButton">Login</button>
+            <button id="loginButton" class="edSheeranButton1">Login</button>
         {% endif %}
     </header>
 
     <div id="songs"></div>
-
-
-    <form id="chatForm">
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
-                <!-- Chat messages will be displayed here -->
-            </div>
-            <div class="chat-input">
-                <input type="text" id="messageInput" name="message" placeholder="Type your message...">
-                <input type="submit" value="Send">
-            </div>
-        </div>
-    </form>
-
-    <script>
-        document.getElementById('chatForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            var formData = new FormData(this);
-            var message = formData.get('message');
-
-            fetch('/submit_chat', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            });
-
-            document.getElementById('messageInput').value = '';
-        });
-
-        function fetchAndDisplayChat() {
-            fetch('/get_chat')
-            .then(response => response.json())
-            .then(data => {
-                var chatMessages = document.getElementById('chatMessages');
-                chatMessages.innerHTML = '';
-
-                data.forEach(chat => {
-                    var newMessage = document.createElement('div');
-                    newMessage.classList.add('message');
-                    newMessage.innerHTML = `<span>${chat.name}:</span><p>${chat.message}</p>`;
-                    chatMessages.appendChild(newMessage);
-                });
-            });
-        }
-
-        fetchAndDisplayChat();
-    </script>
 
 
 
@@ -138,3 +89,4 @@
     <script src="/static/script.js"></script>
 </body>
 </html>
+{% endautoescape %}
