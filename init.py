@@ -135,3 +135,4 @@ if __name__ == "__main__":
     app.run('127.0.0.1', 5800, debug=False)
 
 
+# http://0.0.0.0:8888/phpMyAdmin5/
