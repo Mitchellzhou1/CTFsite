@@ -199,7 +199,7 @@ function createEdSheeranSongElement(song) {
     videoEmbed.height = "200";
     videoEmbed.title = ""; // Set the title attribute to empty string
     videoEmbed.frameBorder = "0"; // Set the frameborder attribute to 0
-    videoEmbed.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    videoEmbed.allow = "accelerometer; autoplay; clipboard-write; gyroscope; picture-in-picture";
     videoEmbed.allowFullscreen = true;
     songElement.appendChild(videoEmbed);
 

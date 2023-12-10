@@ -67,6 +67,22 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    .submit-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #ff7700;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    .submit-button:hover {
+      background-color: #e65c00;
+    }
+    .button-container {
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -90,6 +106,10 @@
       <input type="text" name="comment" placeholder="Type your message..." autocomplete="off">
       <input type="submit" value="Send">
     </form>
+  </div>
+  <br><br>
+  <div class="button-container">
+    <a href="/" class="submit-button">Go Back to Home</a>
   </div>
 
 </body>

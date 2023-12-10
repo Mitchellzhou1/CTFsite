@@ -21,7 +21,7 @@ def check_cookie():
         curr_user = decoded_token
         make_response(redirect(url_for('index')))
 
-        if curr_user['name'] != 'Guest':
+        if curr_user['name'] and curr_user['name'] != 'Guest':
             query = f"SELECT * FROM users WHERE name = '{decoded_token['name']}'"
             cursor.execute(query)
             curr_user = cursor.fetchone()
@@ -105,16 +105,17 @@ def submit_chat():
         name = curr_user['name']
 
         query = "Select * From users where name=%s"
-        cursor.execute(query, (name))
+        cursor.execute(query, (name,))
         result = cursor.fetchone()
         name = f"{result['name']} ({result['privilege']})"
 
         query = "INSERT INTO chatlog (name, message) VALUES (%s, %s);"
         cursor.execute(query, (name, message))
         get_conn().commit()
-        return make_response(render_template('chat.html', messages=get_chat()))
+
+        return redirect(url_for('chat'))  # Redirect to the chat page after successful submission
     except Exception:
-        return make_response(render_template('chat.html', messages=get_chat()))
+        return render_template('chat.html', messages=get_chat())
 
 
 @app.route('/get_chat', methods=['POST'])
