@@ -22,7 +22,7 @@ def check_cookie():
         curr_user = decoded_token
         make_response(redirect(url_for('index')))
 
-        if curr_user['name'] != 'Guest':
+        if curr_user['name'] and curr_user['name'] != 'Guest':
             query = f"SELECT * FROM users WHERE name = '{decoded_token['name']}'"
             cursor.execute(query)
             curr_user = cursor.fetchone()
