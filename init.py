@@ -69,6 +69,10 @@ def index():
         res.set_cookie("session",
                        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR3Vlc3QifQ.zK7zYBE9t7NHZROgouNsDFxqf2uCzVlEeLpf08L3K5Y")
         initial = False
+
+    query = 'DELETE FROM chatlog WHERE message NOT IN ("Welcome To my Site! What are your thoughts about Ed Sheeran\'s latest songs?", "My favorite song is A TEAM !!");'
+    cursor.execute(query)
+    get_conn().commit()
     return res
 
 
@@ -113,7 +117,9 @@ def submit_chat():
         cursor.execute(query, (name, message))
         get_conn().commit()
 
-        return redirect(url_for('chat'))  # Redirect to the chat page after successful submission
+        response = redirect(url_for('chat'))
+
+        return response  # Redirect to the chat page after successful submission
     except Exception:
         return render_template('chat.html', messages=get_chat())
 
