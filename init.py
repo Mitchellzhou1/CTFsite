@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, url_for, redirect, make_response, jsonify
+from flask import Flask, render_template, request, session, url_for, redirect, make_response, jsonify, send_from_directory
 from app import app, get_conn
 import jwt
 
@@ -136,6 +136,12 @@ def chat():
     chat_log = get_chat()
 
     return render_template('chat.html', messages=chat_log)
+
+
+
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory('static/images', filename)
 
 
 if __name__ == "__main__":
