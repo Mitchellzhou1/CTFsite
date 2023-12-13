@@ -102,7 +102,7 @@ function createEdSheeranSongElement(song) {
     songElement.appendChild(songTitle);
 
     let coverIMG = document.createElement("IMG");
-    coverIMG.src = `/images/${song.title}.jpg`;
+    coverIMG.src = `images/${song.title}.jpg`;
     songElement.appendChild(coverIMG);
 
     let youtubeLink = document.createElement("A");
